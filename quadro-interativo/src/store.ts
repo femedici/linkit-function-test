@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 interface Shape {
   id: string;
-  type: "rect" | "circle";
+  type: "rect";
   x: number;
   y: number;
   width?: number;
@@ -13,9 +13,10 @@ interface Shape {
 
 interface StoreState {
   shapes: Shape[];
-  addShape: (type: "rect" | "circle", x: number, y: number) => void;
+  addShape: (type: "rect", x: number, y: number) => void;
   updateShape: (id: string, updates: Partial<Shape>) => void;
   connectShapes: (id1: string, id2: string) => void;
+  removeShape: (id: string) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -29,9 +30,8 @@ export const useStore = create<StoreState>((set) => ({
           type,
           x,
           y,
-          width: type === "rect" ? 100 : undefined,
+          width: type === "rect" ? 80 : undefined,
           height: type === "rect" ? 50 : undefined,
-          radius: type === "circle" ? 30 : undefined,
           connections: [],
         },
       ],
@@ -42,6 +42,11 @@ export const useStore = create<StoreState>((set) => ({
       shapes: state.shapes.map((shape) =>
         shape.id === id ? { ...shape, ...updates } : shape
       ),
+    }));
+  },
+  removeShape: (id) => {
+    set((state) => ({
+      shapes: state.shapes.filter((shape) => shape.id !== id),
     }));
   },
   connectShapes: (id1, id2) => {
